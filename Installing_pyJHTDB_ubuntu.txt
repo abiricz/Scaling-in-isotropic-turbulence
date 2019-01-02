@@ -1,0 +1,282 @@
+## Installing libhdf5 package:
+
+sudo apt-get install libhdf5-dev libhdf5-100 libhdf5-cpp-100
+
+(Versions can differ if not ubuntu 18.04 is used.)
+
+
+
+## Resolve hdf5 naming problem (creating symbolic links):
+
+https://github.com/thegenemyers/DEXTRACTOR/issues/12
+
+important steps:
+		locate hdf5.h // -> /usr/include/hdf5/serial/ (if found, go on, if not, install libhdf5 package)
+
+		sudo ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial.so.100.0.1 /usr/lib/x86_64-linux-gnu/libhdf5.so
+
+		sudo ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so /usr/lib/x86_64-linux-gnu/libhdf5_hl.so
+
+
+
+## Installing steps (https://github.com/idies/pyJHTDB):
+// 3 after python needed for python version 3, if 2, then only python needed
+
+git clone https://github.com/idies/pyJHTDB
+cd /pyJHTDB
+
+sudo apt-get install build-essential gfortran
+sudo apt-get install python3-setuptools
+sudo apt-get install python3-dev
+python3 update_turblib.py
+
+
+
+## Here comes some magic:
+
+nano ~/.baschrc
+	export CPATH="/usr/include/hdf5/serial/" (add this line to end)
+
+source ~/.bashrc
+
+In this folder (\turblib) in both "turblib.h" and "turblib.c" replace the following line in order to locate hdf5.h header file:
+
+#include "hdf5.h" -> #include </usr/include/hdf5/serial/hdf5.h>
+
+It may need to do it here too (/C/local_tools.c).
+
+
+
+## Terminal output when compiling from source:
+
+~/pyJHTDB$ sudo python3 setup.py install
+running install
+running bdist_egg
+running egg_info
+writing pyJHTDB.egg-info/PKG-INFO
+writing dependency_links to pyJHTDB.egg-info/dependency_links.txt
+writing requirements to pyJHTDB.egg-info/requires.txt
+writing top-level names to pyJHTDB.egg-info/top_level.txt
+reading manifest file 'pyJHTDB.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'pyJHTDB.egg-info/SOURCES.txt'
+installing library code to build/bdist.linux-x86_64/egg
+running install_lib
+running build_py
+running build_ext
+building 'libJHTDB' extension
+x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -DCUTOUT_SUPPORT=1 -Iturblib -I/usr/include/python3.6m -c C/local_tools.c -o build/temp.linux-x86_64-3.6/C/local_tools.o
+C/local_tools.c: In function ‘getSphericalBoundedBline’:
+C/local_tools.c:190:57: warning: unused variable ‘valtmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                                         ^~~~~~
+C/local_tools.c:190:51: warning: unused variable ‘ztmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                                   ^~~~
+C/local_tools.c:190:45: warning: unused variable ‘ytmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                             ^~~~
+C/local_tools.c:190:39: warning: unused variable ‘xtmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                       ^~~~
+C/local_tools.c:190:33: warning: unused variable ‘stmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                 ^~~~
+C/local_tools.c:190:18: warning: unused variable ‘rad0’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                  ^~~~
+C/local_tools.c: In function ‘getSphericalBoundedBlineDebug’:
+C/local_tools.c:295:57: warning: unused variable ‘valtmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                                         ^~~~~~
+C/local_tools.c:295:51: warning: unused variable ‘ztmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                                   ^~~~
+C/local_tools.c:295:45: warning: unused variable ‘ytmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                             ^~~~
+C/local_tools.c:295:39: warning: unused variable ‘xtmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                       ^~~~
+C/local_tools.c:295:33: warning: unused variable ‘stmp’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                                 ^~~~
+C/local_tools.c:295:18: warning: variable ‘rad0’ set but not used [-Wunused-but-set-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+                  ^~~~
+C/local_tools.c:295:11: warning: unused variable ‘bsize’ [-Wunused-variable]
+     float bsize, rad0, rad_one, stmp, xtmp, ytmp, ztmp, valtmp;
+           ^~~~~
+C/local_tools.c: In function ‘isBLocal’:
+C/local_tools.c:448:32: warning: passing argument 1 of ‘getDataSet’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+     TurbDataset d = getDataSet(data_set);
+                                ^~~~~~~~
+In file included from C/local_tools.c:38:0:
+turblib/turblib.h:703:13: note: expected ‘char *’ but argument is of type ‘const char *’
+ TurbDataset getDataSet(char *setname);
+             ^~~~~~~~~~
+C/local_tools.c: In function ‘getFilteredPosition’:
+C/local_tools.c:553:17: warning: unused variable ‘deltat’ [-Wunused-variable]
+     float time, deltat;
+                 ^~~~~~
+x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -DCUTOUT_SUPPORT=1 -Iturblib -I/usr/include/python3.6m -c turblib/turblib.c -o build/temp.linux-x86_64-3.6/turblib/turblib.o
+turblib/turblib.c: In function ‘turblibAddLocalSource’:
+turblib/turblib.c:2250:16: warning: array subscript is above array bounds [-Warray-bounds]
+   src->contents[turb_density] = (contents & 0x16 ? 1 : 0);
+   ~~~~~~~~~~~~~^~~~~~~~~~~~~~
+x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -DCUTOUT_SUPPORT=1 -Iturblib -I/usr/include/python3.6m -c turblib/soapC.c -o build/temp.linux-x86_64-3.6/turblib/soapC.o
+x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -DCUTOUT_SUPPORT=1 -Iturblib -I/usr/include/python3.6m -c turblib/soapClient.c -o build/temp.linux-x86_64-3.6/turblib/soapClient.o
+x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -DCUTOUT_SUPPORT=1 -Iturblib -I/usr/include/python3.6m -c turblib/stdsoap2.c -o build/temp.linux-x86_64-3.6/turblib/stdsoap2.o
+turblib/stdsoap2.c: In function ‘soap_set_validation_fault’:
+turblib/stdsoap2.c:15536:78: warning: ‘%s’ directive writing up to 1023 bytes into a region of size 978 [-Wformat-overflow=]
+     sprintf(soap->msgbuf, "Validation constraint violation: %s%s in element '%s'", s, t ? t : SOAP_STR_EOS, soap->tag);
+                                                                              ^~
+In file included from /usr/include/stdio.h:862:0,
+                 from turblib/stdsoap2.h:608,
+                 from turblib/stdsoap2.c:60:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:33:10: note: ‘__builtin___sprintf_chk’ output 48 or more bytes (assuming 1071) into a destination of size 1024
+   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       __bos (__s), __fmt, __va_arg_pack ());
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+turblib/stdsoap2.c: In function ‘http_post’:
+turblib/stdsoap2.c:5645:31: warning: ‘%s’ directive writing up to 1023 bytes into a region of size between 1016 and 1020 [-Wformat-overflow=]
+     sprintf(soap->tmpbuf, "%s %s:%d HTTP/%s", s, soap->host, soap->port, soap->http_version);
+                               ^~
+In file included from /usr/include/stdio.h:862:0,
+                 from turblib/stdsoap2.h:608,
+                 from turblib/stdsoap2.c:60:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:33:10: note: ‘__builtin___sprintf_chk’ output 13 or more bytes (assuming 1040) into a destination of size 1024
+   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       __bos (__s), __fmt, __va_arg_pack ());
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+turblib/stdsoap2.c: In function ‘soap_set_fault’:
+turblib/stdsoap2.c:15584:51: warning: ‘%s’ directive writing up to 1023 bytes into a region of size 1003 [-Wformat-overflow=]
+       sprintf(soap->msgbuf, "The data in element '%s' must be understood but cannot be handled", soap->tag);
+                                                   ^~
+In file included from /usr/include/stdio.h:862:0,
+                 from turblib/stdsoap2.h:608,
+                 from turblib/stdsoap2.c:60:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:33:10: note: ‘__builtin___sprintf_chk’ output between 64 and 1087 bytes into a destination of size 1024
+   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       __bos (__s), __fmt, __va_arg_pack ());
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+turblib/stdsoap2.c:15605:38: warning: ‘%s’ directive writing up to 1023 bytes into a region of size 1016 [-Wformat-overflow=]
+       sprintf(soap->msgbuf, "Method '%s' not implemented: method name or namespace not recognized", soap->tag);
+                                      ^~
+In file included from /usr/include/stdio.h:862:0,
+                 from turblib/stdsoap2.h:608,
+                 from turblib/stdsoap2.c:60:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:33:10: note: ‘__builtin___sprintf_chk’ output between 67 and 1090 bytes into a destination of size 1024
+   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       __bos (__s), __fmt, __va_arg_pack ());
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+x86_64-linux-gnu-gcc -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-Bsymbolic-functions -Wl,-z,relro -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 build/temp.linux-x86_64-3.6/C/local_tools.o build/temp.linux-x86_64-3.6/turblib/turblib.o build/temp.linux-x86_64-3.6/turblib/soapC.o build/temp.linux-x86_64-3.6/turblib/soapClient.o build/temp.linux-x86_64-3.6/turblib/stdsoap2.o -lhdf5 -o build/lib.linux-x86_64-3.6/libJHTDB.cpython-36m-x86_64-linux-gnu.so
+creating build/bdist.linux-x86_64
+creating build/bdist.linux-x86_64/egg
+creating build/bdist.linux-x86_64/egg/pyJHTDB
+creating build/bdist.linux-x86_64/egg/pyJHTDB/data
+copying build/lib.linux-x86_64-3.6/pyJHTDB/data/big_channel_Y_COOR.txt -> build/bdist.linux-x86_64/egg/pyJHTDB/data
+copying build/lib.linux-x86_64-3.6/pyJHTDB/data/channel_xgrid.npy -> build/bdist.linux-x86_64/egg/pyJHTDB/data
+copying build/lib.linux-x86_64-3.6/pyJHTDB/data/channel_ygrid.npy -> build/bdist.linux-x86_64/egg/pyJHTDB/data
+copying build/lib.linux-x86_64-3.6/pyJHTDB/data/channel_zgrid.npy -> build/bdist.linux-x86_64/egg/pyJHTDB/data
+copying build/lib.linux-x86_64-3.6/pyJHTDB/cutout.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/dbinfo.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/libJHTDB.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/interpolator.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/generic_splines.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/__init__.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/test_data.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/test.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/misc.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/pyJHTDB/MortonIndex.py -> build/bdist.linux-x86_64/egg/pyJHTDB
+copying build/lib.linux-x86_64-3.6/libJHTDB.cpython-36m-x86_64-linux-gnu.so -> build/bdist.linux-x86_64/egg
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/cutout.py to cutout.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/dbinfo.py to dbinfo.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/libJHTDB.py to libJHTDB.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/interpolator.py to interpolator.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/generic_splines.py to generic_splines.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/__init__.py to __init__.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/test_data.py to test_data.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/test.py to test.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/misc.py to misc.cpython-36.pyc
+byte-compiling build/bdist.linux-x86_64/egg/pyJHTDB/MortonIndex.py to MortonIndex.cpython-36.pyc
+creating stub loader for libJHTDB.cpython-36m-x86_64-linux-gnu.so
+byte-compiling build/bdist.linux-x86_64/egg/libJHTDB.py to libJHTDB.cpython-36.pyc
+creating build/bdist.linux-x86_64/egg/EGG-INFO
+copying pyJHTDB.egg-info/PKG-INFO -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying pyJHTDB.egg-info/SOURCES.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying pyJHTDB.egg-info/dependency_links.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying pyJHTDB.egg-info/requires.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying pyJHTDB.egg-info/top_level.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+writing build/bdist.linux-x86_64/egg/EGG-INFO/native_libs.txt
+zip_safe flag not set; analyzing archive contents...
+__pycache__.libJHTDB.cpython-36: module references __file__
+pyJHTDB.__pycache__.__init__.cpython-36: module references __file__
+pyJHTDB.__pycache__.dbinfo.cpython-36: module references __file__
+creating dist
+creating 'dist/pyJHTDB-20180922-py3.6-linux-x86_64.egg' and adding 'build/bdist.linux-x86_64/egg' to it
+removing 'build/bdist.linux-x86_64/egg' (and everything under it)
+Processing pyJHTDB-20180922-py3.6-linux-x86_64.egg
+creating /usr/local/lib/python3.6/dist-packages/pyJHTDB-20180922-py3.6-linux-x86_64.egg
+Extracting pyJHTDB-20180922-py3.6-linux-x86_64.egg to /usr/local/lib/python3.6/dist-packages
+Adding pyJHTDB 20180922 to easy-install.pth file
+
+Installed /usr/local/lib/python3.6/dist-packages/pyJHTDB-20180922-py3.6-linux-x86_64.egg
+Processing dependencies for pyJHTDB==20180922
+Searching for sympy==1.3
+Best match: sympy 1.3
+Adding sympy 1.3 to easy-install.pth file
+Installing isympy script to /usr/local/bin
+
+Using /home/abiricz/.local/lib/python3.6/site-packages
+Searching for numpy==1.15.1
+Best match: numpy 1.15.1
+Adding numpy 1.15.1 to easy-install.pth file
+
+Using /home/abiricz/.local/lib/python3.6/site-packages
+Searching for mpmath==1.0.0
+Best match: mpmath 1.0.0
+Adding mpmath 1.0.0 to easy-install.pth file
+
+Using /home/abiricz/.local/lib/python3.6/site-packages
+Finished processing dependencies for pyJHTDB==20180922
+
+
+
+## pip3 list can be used for checking if package is installed correctly
+
+
+
+## check if installation is working properly:
+
+~$ python3
+Python 3.6.6 (default, Sep 12 2018, 18:26:19) 
+[GCC 8.0.1 20180414 (experimental) [trunk revision 259383]] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from pyJHTDB import test_plain
+>>> test_plain()
+
+	For the first time of testing the following error occured (or can occur): 
+
+	../site-packages/numpy/ctypeslib.py", line 155, in load_library
+    raise OSError("no file with expected extension")
+	OSError: no file with expected extension
+
+	To find solution, check these pages: 
+		https://github.com/sunqm/pyscf/issues/83 
+		http://sunqm.github.io/pyscf/tutorial.html#quick-setup
+	
+	Do the following steps listed in 2.1 Quick setup:
+
+		$ sudo apt-get install cmake ## pip install h5py && pip install scipy 
+		$ git clone https://github.com/sunqm/pyscf
+		$ cd pyscf/pyscf/lib
+		$ mkdir build
+		$ cd build
+		$ cmake ..
+		$ (sudo )make
+
